@@ -1,41 +1,32 @@
-import javax.imageio.IIOException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientHandler implements Runnable{
-    private Socket client;
-    private BufferedReader in;
-    private PrintWriter out;
 
-    public ClientHandler(Socket clientSocket) throws IOException{
-        this.client=clientSocket;
-        in=new BufferedReader(new InputStreamReader(client.getInputStream()));
-        out=new PrintWriter(client.getOutputStream());
-    }
+public class Client{
+    private static final String SERVER_IP="127.0.0.1";
+    private static final int SERVER_PORT=9090;
+    public static void main(String[] args) throws IOException{
+        Socket socket=new Socket(SERVER_IP,SERVER_PORT);
 
-    @Override
-    public void run() {
-        try{
-            while(true){
-                String request=in.readLine();
-                if(request.contains("name")){
-                    out.println(Server.getRandomName());
-                }else{
-                    out.println("Type 'tell me a name' to get a random name");
-                }
+        ServerConnection serverConn=new ServerConnection(socket);
+        //BufferedReader input=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+        PrintWriter out=new PrintWriter(socket.getOutputStream(), true);
+
+        new Thread(serverConn).start();
+
+        while(true){
+            System.out.println("> ");
+            String command =keyboard.readLine();
+            if(command.equals("quit")){
+                break;
             }
-        }catch(IOException e){
-            System.err.println("Exception:\n"+e);
-        }finally {
-            out.close();
-            try {
-                in.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            out.println(command);
         }
+        socket.close();
+        System.exit(0);
     }
 }
