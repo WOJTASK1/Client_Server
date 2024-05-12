@@ -7,11 +7,11 @@ import java.net.Socket;
 public class ServerConnection implements Runnable{
     private Socket server;
     private BufferedReader in;
-    private PrintWriter out;
+    //private PrintWriter out;
     public ServerConnection(Socket s) throws IOException {
         server=s;
-        in=new BufferedReader(new InputStreamReader(Client.getInputStream()));
-        out=new PrintWriter(server.getOutputStream(),true);
+        in=new BufferedReader(new InputStreamReader(server.getInputStream()));
+        //out=new PrintWriter(server.getOutputStream(),true);
     }
 
     @Override
@@ -33,8 +33,5 @@ public class ServerConnection implements Runnable{
                     throw new RuntimeException(e);
                 }
             }
-
-
-
     }
 }
