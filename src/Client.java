@@ -49,7 +49,7 @@ public class Client {
                 System.out.println("Server notification: " + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
     }
 }

@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,24 +9,22 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class server {
     private static final int PORT = 12345;
-    private static Map<Integer, PrintWriter> clients = new HashMap<>();
+    private static final Map<Integer, PrintWriter> clients = new HashMap<>();
     private static int clientIdCounter = 1;
 
     public static void main(String[] args) {
-        ExecutorService pool = Executors.newFixedThreadPool(10);
+        try (ExecutorService pool = Executors.newFixedThreadPool(10)) {
 
-        try (ServerSocket listener = new ServerSocket(PORT)) {
-            System.out.println("Server is running...");
-            while (true) {
-                pool.execute(new ClientHandler(listener.accept()));
+            try (ServerSocket listener = new ServerSocket(PORT)) {
+                System.out.println("Server is running...");
+                while (true) {
+                    pool.execute(new ClientHandler(listener.accept()));
+                }
+            } catch (IOException e) {
+                System.out.println(e);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -66,13 +63,13 @@ public class server {
                                 Thread.sleep(delay * 1000);
                                 notifyClient(clientId, getTime(delay)+msg);
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                System.out.println(e);
                             }
                         }).start();
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e);
             } finally {
                 if (out != null) {
                     synchronized (clients) {
@@ -82,7 +79,7 @@ public class server {
                 try {
                     socket.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println(e);
                 }
             }
         }
