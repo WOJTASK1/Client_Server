@@ -31,8 +31,14 @@ public class Client {
                 int timeToSend;
                 try {
                     timeToSend = Integer.parseInt(userInput.nextLine());
+                    if(timeToSend>180 || timeToSend<0){
+                        throw new ExceededDelay(timeToSend);
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid time format. Time must be an integer.");
+                    continue;
+                } catch (ExceededDelay e) {
+                    System.out.println(e);
                     continue;
                 }
 

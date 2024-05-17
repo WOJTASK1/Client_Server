@@ -2,11 +2,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class server {
     private static final int PORT = 12345;
@@ -52,14 +57,14 @@ public class server {
                     String message = in.nextLine();
                     String[] parts = message.split(":", 2);
                     if (parts.length == 2) {
+
                         String msg = parts[0];
                         int delay = Integer.parseInt(parts[1]);
-
                         // Notify the client after the specified delay
                         new Thread(() -> {
                             try {
                                 Thread.sleep(delay * 1000);
-                                notifyClient(clientId, msg);
+                                notifyClient(clientId, getTime(delay)+msg);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -88,8 +93,15 @@ public class server {
                 clientOut = clients.get(clientId);
             }
             if (clientOut != null) {
-                clientOut.println("Notification: " + message);
+                clientOut.println(message);
             }
         }
+        private String getTime(int seconds) {
+                LocalTime currentTime = LocalTime.now().plusSeconds(seconds);
+                String result=String.valueOf(currentTime).substring(0,8);
+                return STR."[\{result}]:";
+
+        }
+
     }
 }
